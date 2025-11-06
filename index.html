@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão Axiagro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #17a2b8;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --purple: #9b59b6;
+            --teal: #1abc9c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        nav ul li a i {
+            margin-right: 8px;
+        }
+        
+        nav ul li a:hover, nav ul li a.active {
+            background-color: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+        }
+        
+        main {
+            padding: 2rem 0;
+            min-height: calc(100vh - 140px);
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .date-filter {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .date-filter select {
+            border: none;
+            background: transparent;
+            padding: 0.5rem;
+            outline: none;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 4px solid var(--secondary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card.celulares {
+            border-left-color: var(--secondary);
+        }
+        
+        .stat-card.problemas {
+            border-left-color: var(--danger);
+        }
+        
+        .stat-card.bordos {
+            border-left-color: var(--info);
+        }
+        
+        .stat-card.radios {
+            border-left-color: var(--purple);
+        }
+        
+        .stat-card.estoque {
+            border-left-color: var(--teal);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.8rem;
+            color: white;
+        }
+        
+        .stat-icon.celulares {
+            background: var(--secondary);
+        }
+        
+        .stat-icon.problemas {
+            background: var(--danger);
+        }
+        
+        .stat-icon.bordos {
+            background: var(--info);
+        }
+        
+        .stat-icon.radios {
+            background: var(--purple);
+        }
+        
+        .stat-icon.estoque {
+            background: var(--teal);
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            line-height: 1;
+        }
+        
+        .stat-label {
+            color: var(--dark);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .stat-change {
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .stat-change.positive {
+            color: var(--success);
+        }
+        
+        .stat-change.negative {
+            color: var(--danger);
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-header i {
+            margin-right: 10px;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        th {
+            background-color: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .status-inactive {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .status-problem {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .progress-fill.celulares {
+            background-color: var(--secondary);
+        }
+        
+        .progress-fill.problemas {
+            background-color: var(--danger);
+        }
+        
+        .progress-fill.bordos {
+            background-color: var(--info);
+        }
+        
+        .progress-fill.radios {
+            background-color: var(--purple);
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .action-btn {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: var(--secondary);
+        }
+        
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .action-label {
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .tab-container {
+            margin-bottom: 2rem;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--secondary);
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        .search-box {
+            margin-bottom: 1rem;
+            display: flex;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            border-right: none;
+        }
+        
+        .search-box button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .search-box button:hover {
+            background-color: #2980b9;
+        }
+        
+        .chart-filter {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .chart-filter.active {
+            background-color: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            nav ul li {
+                margin: 0.5rem;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .date-filter {
+                margin-top: 1rem;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Sistema Axiagro
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active nav-link" data-tab="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                        <li><a href="#" class="nav-link" data-tab="celulares"><i class="fas fa-mobile-alt"></i> Celulares</a></li>
+                        <li><a href="#" class="nav-link" data-tab="bordos"><i class="fas fa-wifi"></i> Bordos</a></li>
+                        <li><a href="#" class="nav-link" data-tab="radios"><i class="fas fa-broadcast-tower"></i> Rádios</a></li>
+                        <li><a href="#" class="nav-link" data-tab="estoque"><i class="fas fa-boxes"></i> Estoque</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <!-- Dashboard -->
+        <section id="dashboard" class="tab-content active">
+            <div class="dashboard-header">
+                <h1 class="section-title">Dashboard Geral</h1>
+                <div class="date-filter">
+                    <i class="fas fa-calendar-alt" style="margin-right: 10px;"></i>
+                    <select id="period-select">
+                        <option>Últimos 7 dias</option>
+                        <option selected>Últimos 30 dias</option>
+                        <option>Últimos 3 meses</option>
+                        <option>Últimos 12 meses</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card celulares">
+                    <div class="stat-icon celulares">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">53</div>
+                        <div class="stat-label">Celulares Ativos</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill celulares" style="width: 85%"></div>
+                        </div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 5% em relação ao mês anterior
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card problemas">
+                    <div class="stat-icon problemas">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Dispositivos com Problemas</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill problemas" style="width: 15%"></div>
+                        </div>
+                        <div class="stat-change negative">
+                            <i class="fas fa-arrow-up"></i> 2% em relação ao mês anterior
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card bordos">
+                    <div class="stat-icon bordos">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">13</div>
+                        <div class="stat-label">Bordos Ativos</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bordos" style="width: 92%"></div>
+                        </div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 8% em relação ao mês anterior
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card radios">
+                    <div class="stat-icon radios">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">25</div>
+                        <div class="stat-label">Rádios em Operação</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill radios" style="width: 78%"></div>
+                        </div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 3% em relação ao mês anterior
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Distribuição de Celulares por Categoria</h2>
+                        <div>
+                            <button class="chart-filter active">Mensal</button>
+                            <button class="chart-filter">Trimestral</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="devicesChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Status dos Dispositivos</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-exclamation-circle"></i> Celulares com Problemas
+                    </div>
+                    <div class="card-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Frota</th>
+                                    <th>MAC</th>
+                                    <th>Problema</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>6138</td>
+                                    <td>78:37:16:ae:7d:ae</td>
+                                    <td>TI</td>
+                                    <td><span class="status-badge status-inactive">Inativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>6963</td>
+                                    <td>78:37:16:ae:a5:6a</td>
+                                    <td>TI</td>
+                                    <td><span class="status-badge status-inactive">Inativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>6522</td>
+                                    <td>78:37:16:ae:4c:96</td>
+                                    <td>Pegou fogo</td>
+                                    <td><span class="status-badge status-inactive">Inativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>6961</td>
+                                    <td>Telefone foi substituido e resetado</td>
+                                    <td>Problema MOB</td>
+                                    <td><span class="status-badge status-inactive">Inativo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line"></i> Estatísticas de Uso
+                    </div>
+                    <div class="card-body">
+                        <div class="quick-actions">
+                            <div class="action-btn" data-tab="celulares">
+                                <div class="action-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="action-label">Celulares</div>
+                                <small>53 ativos</small>
+                            </div>
+                            <div class="action-btn" data-tab="bordos">
+                                <div class="action-icon">
+                                    <i class="fas fa-wifi"></i>
+                                </div>
+                                <div class="action-label">Bordos</div>
+                                <small>13 ativos</small>
+                            </div>
+                            <div class="action-btn" data-tab="radios">
+                                <div class="action-icon">
+                                    <i class="fas fa-broadcast-tower"></i>
+                                </div>
+                                <div class="action-label">Rádios</div>
+                                <small>25 ativos</small>
+                            </div>
+                            <div class="action-btn" data-tab="estoque">
+                                <div class="action-icon">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                                <div class="action-label">Estoque</div>
+                                <small>18 itens</small>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1.5rem;">
+                            <h3 style="margin-bottom: 1rem; color: var(--primary);">Resumo de Equipamentos</h3>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span>Celulares Ativos</span>
+                                <span>53</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span>Celulares Inativos</span>
+                                <span>4</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span>Bordos</span>
+                                <span>13</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span>Rádios</span>
+                                <span>25</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>PTT's</span>
+                                <span>20</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Celulares -->
+        <section id="celulares" class="tab-content">
+            <h2 class="section-title">Gestão de Celulares</h2>
+            
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active" data-subtab="tracao">Trações</div>
+                    <div class="tab" data-subtab="colhedora">Colhedoras</div>
+                    <div class="tab" data-subtab="caminhao">Caminhões</div>
+                    <div class="tab" data-subtab="reserva">Reservas</div>
+                    <div class="tab" data-subtab="inativo">Inativos/Problemas</div>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" id="search-celulares" placeholder="Buscar por frota, MAC ou modelo...">
+                    <button id="btn-search-celulares"><i class="fas fa-search"></i> Buscar</button>
+                </div>
+                
+                <!-- Trações -->
+                <div id="tracao" class="subtab-content active">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-tractor"></i> Celulares - Trações
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Frota</th>
+                                        <th>MAC</th>
+                                        <th>Modelo</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>6528</td>
+                                        <td>78:37:16:ae:3d:aa</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6615</td>
+                                        <td>78:37:16:ae:a5:58</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6617</td>
+                                        <td>78:37:16:ae:33:26</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6670</td>
+                                        <td>78:37:16:ae:4c:a6</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6668</td>
+                                        <td>78:37:16:ae:4a:7a</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6968</td>
+                                        <td>78:37:16:ae:58:c6</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6611</td>
+                                        <td>78:37:16:ae:3f:a8</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6527</td>
+                                        <td>78:37:16:ae:4f:24</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6616</td>
+                                        <td>78:37:16:ae:59:5c</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6526</td>
+                                        <td>78:37:16:ae:7e:b8</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6966</td>
+                                        <td>78:37:16:ae:5a:36</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6612</td>
+                                        <td>78:37:16:ad:ab:08</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6669</td>
+                                        <td>78:37:16:ae:3d:ca</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6967</td>
+                                        <td>78:37:16:ad:aa:fe</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6525</td>
+                                        <td>78:37:16:ae:7e:c0</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6969</td>
+                                        <td>78:37:16:ae:7c:b8</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6459</td>
+                                        <td>78:37:16:ad:aa:fc</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Colhedoras -->
+                <div id="colhedora" class="subtab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-harvest"></i> Celulares - Colhedoras
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Frota</th>
+                                        <th>MAC</th>
+                                        <th>Modelo</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>6990</td>
+                                        <td>78:37:16:ae:31:f6</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6704</td>
+                                        <td>78:37:16:ae:4d:d1</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6722</td>
+                                        <td>78:37:16:ae:4d:b7</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>5911</td>
+                                        <td>78:37:16:ae:7e:78</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6602</td>
+                                        <td>78:37:16:ae:3f:0c</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6703</td>
+                                        <td>78:37:16:ae:57:bd</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6721</td>
+                                        <td>78:37:16:ae:50:d4</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6988</td>
+                                        <td>78:37:16:ad:aa:86</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6989</td>
+                                        <td>78:37:16:ae:a5:2a</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6702</td>
+                                        <td>Telefone Funciona, porém não abre o aplicativo</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-problem">Problema</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6988</td>
+                                        <td>3C:0A:7A:C2:73:7E</td>
+                                        <td>Galaxy A16</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6702</td>
+                                        <td>3C:0A:7A:C2:76:7C</td>
+                                        <td>Galaxy A16</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6989</td>
+                                        <td>3C:0A:7A:C2:73:80</td>
+                                        <td>Galaxy A16</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6721</td>
+                                        <td>3C:0A:7A:C2:76:38</td>
+                                        <td>Galaxy A16</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Caminhões -->
+                <div id="caminhao" class="subtab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-truck"></i> Celulares - Caminhões Canavieiros
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Frota</th>
+                                        <th>MAC</th>
+                                        <th>Modelo</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>6137</td>
+                                        <td>78:37:16:ae:2f:b7</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6963</td>
+                                        <td>78:37:16:ae:4c:64</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6999</td>
+                                        <td>78:37:16:ae:a5:70</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6960</td>
+                                        <td>78:37:16:ae:4c:92</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6964</td>
+                                        <td>78:37:16:ae:30:2e</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6997</td>
+                                        <td>78:37:16:ae:3d:92</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>4786</td>
+                                        <td>78:37:16:ae:54:96</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6679</td>
+                                        <td>78:37:16:ae:4d:82</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6965</td>
+                                        <td>78:37:16:ad:aa:f6</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6998</td>
+                                        <td>78:37:16:ae:54:3a</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6995</td>
+                                        <td>78:37:16:ae:55:c8</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>4787</td>
+                                        <td>78:37:16:ae:31:28</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6143</td>
+                                        <td>78:37:16:ae:7f:02</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6961</td>
+                                        <td>78:37:16:ae:4c:16</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6700</td>
+                                        <td>78:37:16:ae:7e:74</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6699</td>
+                                        <td>78:37:16:ae:54:7c</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6996</td>
+                                        <td>78:37:16:ae:5b:44</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6680</td>
+                                        <td>78:37:16:ae:a5:40</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6962</td>
+                                        <td>78:37:16:ae:3d:b8</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6416</td>
+                                        <td>78:37:16:ad:ab:02</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6650</td>
+                                        <td>d8:cf:bf:2f:85:f7</td>
+                                        <td>Moto "E" 7 - Power</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6134</td>
+                                        <td>78:37:16:ae:4b:5c</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reservas -->
+                <div id="reserva" class="subtab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-box"></i> Celulares - Reservas
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Registro</th>
+                                        <th>Situação/MAC</th>
+                                        <th>Modelo</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>(OK)</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>(OK)</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>78:37:16:ae:4e:78 (OK)</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>(OK)</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>(OK)</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6</td>
+                                        <td>(OK)</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>7</td>
+                                        <td>(OK)</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>8</td>
+                                        <td>(OK)</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-active">Ativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>9</td>
+                                        <td>Não Carrega</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-problem">Problema</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>10</td>
+                                        <td>Não Carrega</td>
+                                        <td>Galaxy A03</td>
+                                        <td><span class="status-badge status-problem">Problema</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Inativos/Problemas -->
+                <div id="inativo" class="subtab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-exclamation-triangle"></i> Celulares Inativos ou com Problemas
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Frota</th>
+                                        <th>MAC</th>
+                                        <th>Problema</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>6138</td>
+                                        <td>78:37:16:ae:7d:ae</td>
+                                        <td>TI</td>
+                                        <td><span class="status-badge status-inactive">Inativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6963</td>
+                                        <td>78:37:16:ae:a5:6a</td>
+                                        <td>TI</td>
+                                        <td><span class="status-badge status-inactive">Inativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6522</td>
+                                        <td>78:37:16:ae:4c:96</td>
+                                        <td>Pegou fogo</td>
+                                        <td><span class="status-badge status-inactive">Inativo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6961</td>
+                                        <td>Telefone foi substituido e resetado</td>
+                                        <td>Problema MOB</td>
+                                        <td><span class="status-badge status-inactive">Inativo</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Bordos -->
+        <section id="bordos" class="tab-content">
+            <h2 class="section-title">Gestão de Bordos</h2>
+            
+            <div class="search-box">
+                <input type="text" id="search-bordos" placeholder="Buscar por registro ou endereço WiFi...">
+                <button id="btn-search-bordos"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-wifi"></i> Bordos - Endereços WiFi
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Registro</th>
+                                <th>Endereço WiFi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>bordo_c8c9a38be3d</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>bordo_08f9e0ce24ad</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>bordo_a0dd6c981f79</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>bordo_ec64c9999215</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>bordo_ec64e99b82d1</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>bordo_2cbcbb9fe2d5</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>bordo_e05a1b3747d5</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>bordo_240ac4fc0c1</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>bordo_e05a1b3741c9</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>bordo_a0ed6c982739</td>
+                            </tr>
+                            <tr>
+                                <td>11</td>
+                                <td>bordo_a0dd6c982221</td>
+                            </tr>
+                            <tr>
+                                <td>12</td>
+                                <td>bordo_a0dd6e98221d</td>
+                            </tr>
+                            <tr>
+                                <td>13</td>
+                                <td>bordo_10521c64e709</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Rádios -->
+        <section id="radios" class="tab-content">
+            <h2 class="section-title">Gestão de Rádios</h2>
+            
+            <div class="search-box">
+                <input type="text" id="search-radios" placeholder="Buscar por registro, modelo ou frota...">
+                <button id="btn-search-radios"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-broadcast-tower"></i> Rádios
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Registro</th>
+                                <th>Modelo</th>
+                                <th>Frota Referência</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Motorola EM-400</td>
+                                <td>6988</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Motorola EM-400</td>
+                                <td>6979</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Motorola PRO-5100</td>
+                                <td>6722</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Motorola PRO-5100</td>
+                                <td>(Registro não legível)</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Motorola EM-400</td>
+                                <td>6990</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>Motorola PRO-5100</td>
+                                <td>6702</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>Motorola EM-200</td>
+                                <td>(Sem registro)</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>Motorola PRO-5100</td>
+                                <td>6700</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>Motorola EM-400</td>
+                                <td>6704</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>Motorola PRO-5100</td>
+                                <td>6621</td>
+                            </tr>
+                            <tr>
+                                <td>11</td>
+                                <td>Motorola PRO-5100</td>
+                                <td>(Sem registro)</td>
+                            </tr>
+                            <tr>
+                                <td>12</td>
+                                <td>Motorola PRO-5100</td>
+                                <td>6721</td>
+                            </tr>
+                            <tr>
+                                <td>13</td>
+                                <td>Motorola EM-400</td>
+                                <td>6989</td>
+                            </tr>
+                            <tr>
+                                <td>14</td>
+                                <td>Motorola PRO - 5100</td>
+                                <td>6963</td>
+                            </tr>
+                            <tr>
+                                <td>15</td>
+                                <td>Motorola PRO - 5100</td>
+                                <td>6962</td>
+                            </tr>
+                            <tr>
+                                <td>16</td>
+                                <td>Motorola PRO - 5100</td>
+                                <td>6679</td>
+                            </tr>
+                            <tr>
+                                <td>17</td>
+                                <td>Motorola PRO - 5100</td>
+                                <td>6697</td>
+                            </tr>
+                            <tr>
+                                <td>18</td>
+                                <td>Motorola PRO - 5100</td>
+                                <td>6419</td>
+                            </tr>
+                            <tr>
+                                <td>19</td>
+                                <td>Motorola PRO - 5100</td>
+                                <td>6680</td>
+                            </tr>
+                            <tr>
+                                <td>20</td>
+                                <td>Motorola PRO - 5100</td>
+                                <td>6964</td>
+                            </tr>
+                            <tr>
+                                <td>21</td>
+                                <td>Motorola PRO - 5100</td>
+                                <td>6699</td>
+                            </tr>
+                            <tr>
+                                <td>22</td>
+                                <td>Motorola PRO - 5100</td>
+                                <td>6960</td>
+                            </tr>
+                            <tr>
+                                <td>23</td>
+                                <td>Motorola PRO - 5100</td>
+                                <td>6581</td>
+                            </tr>
+                            <tr>
+                                <td>24</td>
+                                <td>Motorola PRO - 5100</td>
+                                <td>6681</td>
+                            </tr>
+                            <tr>
+                                <td>25</td>
+                                <td>Motorola EM - 400</td>
+                                <td>6266</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i> Observações
+                </div>
+                <div class="card-body">
+                    <p>Estamos com 20 PTT's e 7 suportes</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Estoque -->
+        <section id="estoque" class="tab-content">
+            <h2 class="section-title">Inventário de Estoque</h2>
+            
+            <div class="search-box">
+                <input type="text" id="search-estoque" placeholder="Buscar por equipamento ou modelo...">
+                <button id="btn-search-estoque"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-boxes"></i> Equipamentos em Estoque
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Equipamento</th>
+                                <th>Quantidade</th>
+                                <th>Modelo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Suportes Carregadores</td>
+                                <td>33</td>
+                                <td>C-20</td>
+                            </tr>
+                            <tr>
+                                <td>Carregador de Carro usb</td>
+                                <td>12</td>
+                                <td>LE-6821</td>
+                            </tr>
+                            <tr>
+                                <td>Cabos carregador</td>
+                                <td>5</td>
+                                <td>V8 -35W</td>
+                            </tr>
+                            <tr>
+                                <td>Cabos carregador</td>
+                                <td>13</td>
+                                <td>3A - 25W</td>
+                            </tr>
+                            <tr>
+                                <td>Cabos carregador</td>
+                                <td>1</td>
+                                <td>MD-8440 tipo - C</td>
+                            </tr>
+                            <tr>
+                                <td>Fita Isolante</td>
+                                <td>1</td>
+                                <td>P22</td>
+                            </tr>
+                            <tr>
+                                <td>Fusível de lâmina</td>
+                                <td>1</td>
+                                <td>10A</td>
+                            </tr>
+                            <tr>
+                                <td>Fita Crepe</td>
+                                <td>2</td>
+                                <td>18mm x 40m</td>
+                            </tr>
+                            <tr>
+                                <td>Fita Adesiva</td>
+                                <td>2</td>
+                                <td>45mm x 45m</td>
+                            </tr>
+                            <tr>
+                                <td>Antena starlink</td>
+                                <td>1</td>
+                                <td>starlink 1</td>
+                            </tr>
+                            <tr>
+                                <td>Antena starlink</td>
+                                <td>10</td>
+                                <td>starlink mini</td>
+                            </tr>
+                            <tr>
+                                <td>Quick Charger USB</td>
+                                <td>2</td>
+                                <td>55W</td>
+                            </tr>
+                            <tr>
+                                <td>Tomada de força DNI automotivo</td>
+                                <td>18</td>
+                                <td>12/24 V</td>
+                            </tr>
+                            <tr>
+                                <td>Auto Cigarette</td>
+                                <td>8</td>
+                                <td>acendedor de cigarro</td>
+                            </tr>
+                            <tr>
+                                <td>Suporte para PTT</td>
+                                <td>2</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Antena kit starlink</td>
+                                <td>8</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Controladoras</td>
+                                <td>2</td>
+                                <td>XTRA4415N</td>
+                            </tr>
+                            <tr>
+                                <td>Controladoras</td>
+                                <td>2</td>
+                                <td>XTRA4415N-XDS2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>Sistema de Gestão Axiagro &copy; 2023 - Todos os direitos reservados</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Sistema de Navegação Principal
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar gráficos
+            initCharts();
+            
+            // Configurar navegação
+            setupNavigation();
+            
+            // Configurar buscas
+            setupSearch();
+        });
+
+        function setupNavigation() {
+            // Navegação entre abas principais
+            document.querySelectorAll('.nav-link').forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove classe active de todas as abas
+                    document.querySelectorAll('.nav-link').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                    
+                    // Adiciona classe active à aba clicada
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Navegação entre subtabas (celulares)
+            document.querySelectorAll('.tab-container .tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove classe active de todas as subtabas
+                    const container = this.closest('.tab-container');
+                    container.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    container.querySelectorAll('.subtab-content').forEach(t => t.classList.remove('active'));
+                    
+                    // Adiciona classe active à subtaba clicada
+                    this.classList.add('active');
+                    const subtabId = this.getAttribute('data-subtab');
+                    document.getElementById(subtabId).classList.add('active');
+                });
+            });
+            
+            // Navegação pelos botões de ação rápida
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tab = this.getAttribute('data-tab');
+                    
+                    // Remove classe active de todas as abas
+                    document.querySelectorAll('.nav-link').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                    
+                    // Adiciona classe active à aba selecionada
+                    document.querySelector(`.nav-link[data-tab="${tab}"]`).classList.add('active');
+                    document.getElementById(tab).classList.add('active');
+                });
+            });
+        }
+
+        function setupSearch() {
+            // Configurar todas as funcionalidades de busca
+            const searchConfig = [
+                { btn: 'btn-search-celulares', input: 'search-celulares', getTable: () => {
+                    const activeSubTab = document.querySelector('.tab-container .tab.active').getAttribute('data-subtab');
+                    return document.querySelector(`#${activeSubTab} table tbody`);
+                }},
+                { btn: 'btn-search-bordos', input: 'search-bordos', getTable: () => 
+                    document.querySelector('#bordos table tbody') },
+                { btn: 'btn-search-radios', input: 'search-radios', getTable: () => 
+                    document.querySelector('#radios table tbody') },
+                { btn: 'btn-search-estoque', input: 'search-estoque', getTable: () => 
+                    document.querySelector('#estoque table tbody') }
+            ];
+
+            searchConfig.forEach(config => {
+                const btn = document.getElementById(config.btn);
+                const input = document.getElementById(config.input);
+                
+                btn.addEventListener('click', () => performSearch(input, config.getTable()));
+                input.addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') performSearch(input, config.getTable());
+                });
+            });
+
+            // Configurar filtros de gráficos
+            document.querySelectorAll('.chart-filter').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-filter').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        function performSearch(inputElement, tableBody) {
+            const searchTerm = inputElement.value.toLowerCase();
+            const rows = tableBody.querySelectorAll('tr');
+            
+            let found = false;
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                    found = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Feedback visual
+            if (!found && searchTerm) {
+                inputElement.style.borderColor = 'var(--danger)';
+                setTimeout(() => {
+                    inputElement.style.borderColor = '#ddd';
+                }, 2000);
+            }
+        }
+
+        function initCharts() {
+            // Gráfico de distribuição de celulares
+            const devicesCtx = document.getElementById('devicesChart').getContext('2d');
+            new Chart(devicesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Trações', 'Colhedoras', 'Caminhões', 'Reservas'],
+                    datasets: [{
+                        label: 'Galaxy A03',
+                        data: [17, 10, 22, 10],
+                        backgroundColor: '#3498db',
+                        borderColor: '#2980b9',
+                        borderWidth: 1
+                    }, {
+                        label: 'Galaxy A16',
+                        data: [0, 4, 0, 0],
+                        backgroundColor: '#9b59b6',
+                        borderColor: '#8e44ad',
+                        borderWidth: 1
+                    }, {
+                        label: 'Moto E7',
+                        data: [0, 0, 1, 0],
+                        backgroundColor: '#1abc9c',
+                        borderColor: '#16a085',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Quantidade de Dispositivos'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de status dos dispositivos
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ativos', 'Com Problemas', 'Inativos'],
+                    datasets: [{
+                        data: [53, 8, 4],
+                        backgroundColor: [
+                            '#27ae60',
+                            '#f39c12',
+                            '#e74c3c'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Adicionar classe para subtabs
+        document.querySelectorAll('#tracao, #colhedora, #caminhao, #reserva, #inativo').forEach(el => {
+            el.classList.add('subtab-content');
+        });
+
+        // Inicializar a primeira subtab como ativa
+        document.querySelectorAll('.subtab-content').forEach(el => {
+            el.classList.remove('active');
+        });
+        document.getElementById('tracao').classList.add('active');
+    </script>
+</body>
+</html>
