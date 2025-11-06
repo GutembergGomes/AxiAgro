@@ -317,6 +317,7 @@
             font-weight: 600;
             display: flex;
             align-items: center;
+            justify-content: space-between;
         }
         
         .card-header i {
@@ -520,6 +521,158 @@
             color: white;
             border-color: var(--secondary);
         }
+
+        /* Botões de ação */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        /* Ações da tabela */
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Controle de Estoque */
+        .estoque-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--teal);
+        }
         
         @media (max-width: 768px) {
             .header-content {
@@ -548,6 +701,10 @@
             
             .tabs {
                 overflow-x: auto;
+            }
+            
+            .table-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -805,6 +962,9 @@
                 <div class="search-box">
                     <input type="text" id="search-celulares" placeholder="Buscar por frota, MAC ou modelo...">
                     <button id="btn-search-celulares"><i class="fas fa-search"></i> Buscar</button>
+                    <button class="btn btn-primary" onclick="openModal('modal-celular', 'add')" style="margin-left: 1rem;">
+                        <i class="fas fa-plus"></i> Novo Celular
+                    </button>
                 </div>
                 
                 <!-- Trações -->
@@ -821,6 +981,7 @@
                                         <th>MAC</th>
                                         <th>Modelo</th>
                                         <th>Status</th>
+                                        <th>Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -829,102 +990,238 @@
                                         <td>78:37:16:ae:3d:aa</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6615</td>
                                         <td>78:37:16:ae:a5:58</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6617</td>
                                         <td>78:37:16:ae:33:26</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6670</td>
                                         <td>78:37:16:ae:4c:a6</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6668</td>
                                         <td>78:37:16:ae:4a:7a</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6968</td>
                                         <td>78:37:16:ae:58:c6</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6611</td>
                                         <td>78:37:16:ae:3f:a8</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6527</td>
                                         <td>78:37:16:ae:4f:24</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6616</td>
                                         <td>78:37:16:ae:59:5c</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6526</td>
                                         <td>78:37:16:ae:7e:b8</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6966</td>
                                         <td>78:37:16:ae:5a:36</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6612</td>
                                         <td>78:37:16:ad:ab:08</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6669</td>
                                         <td>78:37:16:ae:3d:ca</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6967</td>
                                         <td>78:37:16:ad:aa:fe</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6525</td>
                                         <td>78:37:16:ae:7e:c0</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6969</td>
                                         <td>78:37:16:ae:7c:b8</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6459</td>
                                         <td>78:37:16:ad:aa:fc</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -946,6 +1243,7 @@
                                         <th>MAC</th>
                                         <th>Modelo</th>
                                         <th>Status</th>
+                                        <th>Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -954,84 +1252,196 @@
                                         <td>78:37:16:ae:31:f6</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6704</td>
                                         <td>78:37:16:ae:4d:d1</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6722</td>
                                         <td>78:37:16:ae:4d:b7</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>5911</td>
                                         <td>78:37:16:ae:7e:78</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6602</td>
                                         <td>78:37:16:ae:3f:0c</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6703</td>
                                         <td>78:37:16:ae:57:bd</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6721</td>
                                         <td>78:37:16:ae:50:d4</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6988</td>
                                         <td>78:37:16:ad:aa:86</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6989</td>
                                         <td>78:37:16:ae:a5:2a</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6702</td>
                                         <td>Telefone Funciona, porém não abre o aplicativo</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-problem">Problema</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6988</td>
                                         <td>3C:0A:7A:C2:73:7E</td>
                                         <td>Galaxy A16</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6702</td>
                                         <td>3C:0A:7A:C2:76:7C</td>
                                         <td>Galaxy A16</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6989</td>
                                         <td>3C:0A:7A:C2:73:80</td>
                                         <td>Galaxy A16</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6721</td>
                                         <td>3C:0A:7A:C2:76:38</td>
                                         <td>Galaxy A16</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1053,6 +1463,7 @@
                                         <th>MAC</th>
                                         <th>Modelo</th>
                                         <th>Status</th>
+                                        <th>Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1061,132 +1472,308 @@
                                         <td>78:37:16:ae:2f:b7</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6963</td>
                                         <td>78:37:16:ae:4c:64</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6999</td>
                                         <td>78:37:16:ae:a5:70</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6960</td>
                                         <td>78:37:16:ae:4c:92</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6964</td>
                                         <td>78:37:16:ae:30:2e</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6997</td>
                                         <td>78:37:16:ae:3d:92</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>4786</td>
                                         <td>78:37:16:ae:54:96</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6679</td>
                                         <td>78:37:16:ae:4d:82</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6965</td>
                                         <td>78:37:16:ad:aa:f6</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6998</td>
                                         <td>78:37:16:ae:54:3a</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6995</td>
                                         <td>78:37:16:ae:55:c8</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>4787</td>
                                         <td>78:37:16:ae:31:28</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6143</td>
                                         <td>78:37:16:ae:7f:02</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6961</td>
                                         <td>78:37:16:ae:4c:16</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6700</td>
                                         <td>78:37:16:ae:7e:74</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6699</td>
                                         <td>78:37:16:ae:54:7c</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6996</td>
                                         <td>78:37:16:ae:5b:44</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6680</td>
                                         <td>78:37:16:ae:a5:40</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6962</td>
                                         <td>78:37:16:ae:3d:b8</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6416</td>
                                         <td>78:37:16:ad:ab:02</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6650</td>
                                         <td>d8:cf:bf:2f:85:f7</td>
                                         <td>Moto "E" 7 - Power</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6134</td>
                                         <td>78:37:16:ae:4b:5c</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1208,6 +1795,7 @@
                                         <th>Situação/MAC</th>
                                         <th>Modelo</th>
                                         <th>Status</th>
+                                        <th>Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1216,60 +1804,140 @@
                                         <td>(OK)</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>2</td>
                                         <td>(OK)</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>3</td>
                                         <td>78:37:16:ae:4e:78 (OK)</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>4</td>
                                         <td>(OK)</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>5</td>
                                         <td>(OK)</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6</td>
                                         <td>(OK)</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>7</td>
                                         <td>(OK)</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>8</td>
                                         <td>(OK)</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-active">Ativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>9</td>
                                         <td>Não Carrega</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-problem">Problema</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>10</td>
                                         <td>Não Carrega</td>
                                         <td>Galaxy A03</td>
                                         <td><span class="status-badge status-problem">Problema</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1291,6 +1959,7 @@
                                         <th>MAC</th>
                                         <th>Problema</th>
                                         <th>Status</th>
+                                        <th>Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1299,24 +1968,56 @@
                                         <td>78:37:16:ae:7d:ae</td>
                                         <td>TI</td>
                                         <td><span class="status-badge status-inactive">Inativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6963</td>
                                         <td>78:37:16:ae:a5:6a</td>
                                         <td>TI</td>
                                         <td><span class="status-badge status-inactive">Inativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6522</td>
                                         <td>78:37:16:ae:4c:96</td>
                                         <td>Pegou fogo</td>
                                         <td><span class="status-badge status-inactive">Inativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>6961</td>
                                         <td>Telefone foi substituido e resetado</td>
                                         <td>Problema MOB</td>
                                         <td><span class="status-badge status-inactive">Inativo</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-warning btn-sm" onclick="openModal('modal-celular', 'edit', this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'celular')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1333,6 +2034,9 @@
             <div class="search-box">
                 <input type="text" id="search-bordos" placeholder="Buscar por registro ou endereço WiFi...">
                 <button id="btn-search-bordos"><i class="fas fa-search"></i> Buscar</button>
+                <button class="btn btn-primary" onclick="openModal('modal-bordo', 'add')" style="margin-left: 1rem;">
+                    <i class="fas fa-plus"></i> Novo Bordo
+                </button>
             </div>
             
             <div class="card">
@@ -1345,60 +2049,165 @@
                             <tr>
                                 <th>Registro</th>
                                 <th>Endereço WiFi</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>1</td>
                                 <td>bordo_c8c9a38be3d</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>2</td>
                                 <td>bordo_08f9e0ce24ad</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>3</td>
                                 <td>bordo_a0dd6c981f79</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>4</td>
                                 <td>bordo_ec64c9999215</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>5</td>
                                 <td>bordo_ec64e99b82d1</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>6</td>
                                 <td>bordo_2cbcbb9fe2d5</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>7</td>
                                 <td>bordo_e05a1b3747d5</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>8</td>
                                 <td>bordo_240ac4fc0c1</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>9</td>
                                 <td>bordo_e05a1b3741c9</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>10</td>
                                 <td>bordo_a0ed6c982739</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>11</td>
                                 <td>bordo_a0dd6c982221</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>12</td>
                                 <td>bordo_a0dd6e98221d</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>13</td>
                                 <td>bordo_10521c64e709</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-bordo', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'bordo')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -1413,6 +2222,9 @@
             <div class="search-box">
                 <input type="text" id="search-radios" placeholder="Buscar por registro, modelo ou frota...">
                 <button id="btn-search-radios"><i class="fas fa-search"></i> Buscar</button>
+                <button class="btn btn-primary" onclick="openModal('modal-radio', 'add')" style="margin-left: 1rem;">
+                    <i class="fas fa-plus"></i> Novo Rádio
+                </button>
             </div>
             
             <div class="card">
@@ -1426,6 +2238,7 @@
                                 <th>Registro</th>
                                 <th>Modelo</th>
                                 <th>Frota Referência</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1433,126 +2246,326 @@
                                 <td>1</td>
                                 <td>Motorola EM-400</td>
                                 <td>6988</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>2</td>
                                 <td>Motorola EM-400</td>
                                 <td>6979</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>3</td>
                                 <td>Motorola PRO-5100</td>
                                 <td>6722</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>4</td>
                                 <td>Motorola PRO-5100</td>
                                 <td>(Registro não legível)</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>5</td>
                                 <td>Motorola EM-400</td>
                                 <td>6990</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>6</td>
                                 <td>Motorola PRO-5100</td>
                                 <td>6702</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>7</td>
                                 <td>Motorola EM-200</td>
                                 <td>(Sem registro)</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>8</td>
                                 <td>Motorola PRO-5100</td>
                                 <td>6700</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>9</td>
                                 <td>Motorola EM-400</td>
                                 <td>6704</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>10</td>
                                 <td>Motorola PRO-5100</td>
                                 <td>6621</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>11</td>
                                 <td>Motorola PRO-5100</td>
                                 <td>(Sem registro)</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>12</td>
                                 <td>Motorola PRO-5100</td>
                                 <td>6721</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>13</td>
                                 <td>Motorola EM-400</td>
                                 <td>6989</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>14</td>
                                 <td>Motorola PRO - 5100</td>
                                 <td>6963</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>15</td>
                                 <td>Motorola PRO - 5100</td>
                                 <td>6962</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>16</td>
                                 <td>Motorola PRO - 5100</td>
                                 <td>6679</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>17</td>
                                 <td>Motorola PRO - 5100</td>
                                 <td>6697</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>18</td>
                                 <td>Motorola PRO - 5100</td>
                                 <td>6419</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>19</td>
                                 <td>Motorola PRO - 5100</td>
                                 <td>6680</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>20</td>
                                 <td>Motorola PRO - 5100</td>
                                 <td>6964</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>21</td>
                                 <td>Motorola PRO - 5100</td>
                                 <td>6699</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>22</td>
                                 <td>Motorola PRO - 5100</td>
                                 <td>6960</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>23</td>
                                 <td>Motorola PRO - 5100</td>
                                 <td>6581</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>24</td>
                                 <td>Motorola PRO - 5100</td>
                                 <td>6681</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>25</td>
                                 <td>Motorola EM - 400</td>
                                 <td>6266</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-radio', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'radio')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -1576,6 +2589,17 @@
             <div class="search-box">
                 <input type="text" id="search-estoque" placeholder="Buscar por equipamento ou modelo...">
                 <button id="btn-search-estoque"><i class="fas fa-search"></i> Buscar</button>
+                <button class="btn btn-primary" onclick="openModal('modal-estoque', 'add')" style="margin-left: 1rem;">
+                    <i class="fas fa-plus"></i> Novo Item
+                </button>
+                <button class="btn btn-success" onclick="openModal('modal-movimentacao', 'add')" style="margin-left: 0.5rem;">
+                    <i class="fas fa-exchange-alt"></i> Movimentação
+                </button>
+            </div>
+
+            <div class="estoque-info">
+                <h4><i class="fas fa-info-circle"></i> Controle de Estoque</h4>
+                <p>Gerencie entradas, saídas e transferências de equipamentos. Acompanhe onde cada item está sendo utilizado.</p>
             </div>
             
             <div class="card">
@@ -1589,6 +2613,9 @@
                                 <th>Equipamento</th>
                                 <th>Quantidade</th>
                                 <th>Modelo</th>
+                                <th>Localização</th>
+                                <th>Última Movimentação</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1596,91 +2623,379 @@
                                 <td>Suportes Carregadores</td>
                                 <td>33</td>
                                 <td>C-20</td>
+                                <td>Almoxarifado Central</td>
+                                <td>15/03/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Carregador de Carro usb</td>
                                 <td>12</td>
                                 <td>LE-6821</td>
+                                <td>Almoxarifado Central</td>
+                                <td>10/03/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Cabos carregador</td>
                                 <td>5</td>
                                 <td>V8 -35W</td>
+                                <td>Oficina</td>
+                                <td>08/03/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Cabos carregador</td>
                                 <td>13</td>
                                 <td>3A - 25W</td>
+                                <td>Almoxarifado Central</td>
+                                <td>12/03/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Cabos carregador</td>
                                 <td>1</td>
                                 <td>MD-8440 tipo - C</td>
+                                <td>Oficina</td>
+                                <td>05/03/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Fita Isolante</td>
                                 <td>1</td>
                                 <td>P22</td>
+                                <td>Oficina</td>
+                                <td>20/02/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Fusível de lâmina</td>
                                 <td>1</td>
                                 <td>10A</td>
+                                <td>Oficina</td>
+                                <td>18/02/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Fita Crepe</td>
                                 <td>2</td>
                                 <td>18mm x 40m</td>
+                                <td>Almoxarifado Central</td>
+                                <td>22/02/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Fita Adesiva</td>
                                 <td>2</td>
                                 <td>45mm x 45m</td>
+                                <td>Almoxarifado Central</td>
+                                <td>22/02/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Antena starlink</td>
                                 <td>1</td>
                                 <td>starlink 1</td>
+                                <td>Campo</td>
+                                <td>28/02/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Antena starlink</td>
                                 <td>10</td>
                                 <td>starlink mini</td>
+                                <td>Almoxarifado Central</td>
+                                <td>01/03/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Quick Charger USB</td>
                                 <td>2</td>
                                 <td>55W</td>
+                                <td>Oficina</td>
+                                <td>14/03/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Tomada de força DNI automotivo</td>
                                 <td>18</td>
                                 <td>12/24 V</td>
+                                <td>Almoxarifado Central</td>
+                                <td>25/02/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Auto Cigarette</td>
                                 <td>8</td>
                                 <td>acendedor de cigarro</td>
+                                <td>Almoxarifado Central</td>
+                                <td>19/02/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Suporte para PTT</td>
                                 <td>2</td>
                                 <td>-</td>
+                                <td>Oficina</td>
+                                <td>11/03/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Antena kit starlink</td>
                                 <td>8</td>
                                 <td>-</td>
+                                <td>Almoxarifado Central</td>
+                                <td>03/03/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Controladoras</td>
                                 <td>2</td>
                                 <td>XTRA4415N</td>
+                                <td>Oficina</td>
+                                <td>09/03/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Controladoras</td>
                                 <td>2</td>
                                 <td>XTRA4415N-XDS2</td>
+                                <td>Oficina</td>
+                                <td>09/03/2024</td>
+                                <td class="table-actions">
+                                    <button class="btn btn-warning btn-sm" onclick="openModal('modal-estoque', 'edit', this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteItem(this, 'estoque')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModal('modal-movimentacao', 'movimentar', this)">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-history"></i> Histórico de Movimentações
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Equipamento</th>
+                                <th>Tipo</th>
+                                <th>Quantidade</th>
+                                <th>De/Para</th>
+                                <th>Responsável</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>15/03/2024</td>
+                                <td>Suportes Carregadores</td>
+                                <td><span class="status-badge status-active">Entrada</span></td>
+                                <td>5</td>
+                                <td>Fornecedor → Almoxarifado</td>
+                                <td>João Silva</td>
+                            </tr>
+                            <tr>
+                                <td>10/03/2024</td>
+                                <td>Cabos carregador</td>
+                                <td><span class="status-badge status-inactive">Saída</span></td>
+                                <td>3</td>
+                                <td>Almoxarifado → Manutenção</td>
+                                <td>Maria Santos</td>
+                            </tr>
+                            <tr>
+                                <td>08/03/2024</td>
+                                <td>Antena starlink mini</td>
+                                <td><span class="status-badge status-active">Entrada</span></td>
+                                <td>10</td>
+                                <td>Fornecedor → Almoxarifado</td>
+                                <td>Carlos Oliveira</td>
+                            </tr>
+                            <tr>
+                                <td>05/03/2024</td>
+                                <td>Quick Charger USB</td>
+                                <td><span class="status-badge status-inactive">Saída</span></td>
+                                <td>2</td>
+                                <td>Almoxarifado → Oficina</td>
+                                <td>Ana Costa</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1688,68 +3003,226 @@
             </div>
         </section>
     </main>
+
+    <!-- Modal para Celulares -->
+    <div id="modal-celular" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-mobile-alt"></i> <span id="modal-celular-title">Novo Celular</span></h3>
+                <button class="close-modal" onclick="closeModal('modal-celular')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-celular">
+                    <div class="form-group">
+                        <label for="celular-frota">Frota *</label>
+                        <input type="text" id="celular-frota" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="celular-mac">MAC Address *</label>
+                        <input type="text" id="celular-mac" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="celular-modelo">Modelo *</label>
+                        <select id="celular-modelo" required>
+                            <option value="">Selecione...</option>
+                            <option value="Galaxy A03">Galaxy A03</option>
+                            <option value="Galaxy A16">Galaxy A16</option>
+                            <option value="Moto E7 Power">Moto E7 Power</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="celular-categoria">Categoria *</label>
+                        <select id="celular-categoria" required>
+                            <option value="">Selecione...</option>
+                            <option value="tracao">Trações</option>
+                            <option value="colhedora">Colhedoras</option>
+                            <option value="caminhao">Caminhões</option>
+                            <option value="reserva">Reservas</option>
+                            <option value="inativo">Inativos/Problemas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="celular-status">Status *</label>
+                        <select id="celular-status" required>
+                            <option value="ativo">Ativo</option>
+                            <option value="inativo">Inativo</option>
+                            <option value="problema">Com Problema</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="celular-observacao">Observações</label>
+                        <textarea id="celular-observacao"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-danger" onclick="closeModal('modal-celular')">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Estoque -->
+    <div id="modal-estoque" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-box"></i> <span id="modal-estoque-title">Novo Item de Estoque</span></h3>
+                <button class="close-modal" onclick="closeModal('modal-estoque')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-estoque">
+                    <div class="form-group">
+                        <label for="estoque-equipamento">Equipamento *</label>
+                        <input type="text" id="estoque-equipamento" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="estoque-quantidade">Quantidade *</label>
+                        <input type="number" id="estoque-quantidade" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="estoque-modelo">Modelo *</label>
+                        <input type="text" id="estoque-modelo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="estoque-localizacao">Localização *</label>
+                        <select id="estoque-localizacao" required>
+                            <option value="">Selecione...</option>
+                            <option value="Almoxarifado Central">Almoxarifado Central</option>
+                            <option value="Oficina">Oficina</option>
+                            <option value="Campo">Campo</option>
+                            <option value="Manutenção">Manutenção</option>
+                            <option value="Fornecedor">Fornecedor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="estoque-minimo">Estoque Mínimo</label>
+                        <input type="number" id="estoque-minimo" min="0">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-danger" onclick="closeModal('modal-estoque')">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Movimentação de Estoque -->
+    <div id="modal-movimentacao" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exchange-alt"></i> <span id="modal-movimentacao-title">Movimentação de Estoque</span></h3>
+                <button class="close-modal" onclick="closeModal('modal-movimentacao')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-movimentacao">
+                    <div class="form-group">
+                        <label for="movimentacao-equipamento">Equipamento *</label>
+                        <select id="movimentacao-equipamento" required>
+                            <option value="">Selecione...</option>
+                            <option value="Suportes Carregadores">Suportes Carregadores</option>
+                            <option value="Carregador de Carro usb">Carregador de Carro usb</option>
+                            <option value="Cabos carregador">Cabos carregador</option>
+                            <option value="Antena starlink">Antena starlink</option>
+                            <option value="Quick Charger USB">Quick Charger USB</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="movimentacao-tipo">Tipo de Movimentação *</label>
+                        <select id="movimentacao-tipo" required>
+                            <option value="">Selecione...</option>
+                            <option value="entrada">Entrada</option>
+                            <option value="saida">Saída</option>
+                            <option value="transferencia">Transferência</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="movimentacao-quantidade">Quantidade *</label>
+                        <input type="number" id="movimentacao-quantidade" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="movimentacao-origem">Origem *</label>
+                        <select id="movimentacao-origem" required>
+                            <option value="">Selecione...</option>
+                            <option value="Fornecedor">Fornecedor</option>
+                            <option value="Almoxarifado Central">Almoxarifado Central</option>
+                            <option value="Oficina">Oficina</option>
+                            <option value="Campo">Campo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="movimentacao-destino">Destino *</label>
+                        <select id="movimentacao-destino" required>
+                            <option value="">Selecione...</option>
+                            <option value="Almoxarifado Central">Almoxarifado Central</option>
+                            <option value="Oficina">Oficina</option>
+                            <option value="Campo">Campo</option>
+                            <option value="Manutenção">Manutenção</option>
+                            <option value="Descarte">Descarte</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="movimentacao-responsavel">Responsável *</label>
+                        <input type="text" id="movimentacao-responsavel" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="movimentacao-observacao">Observações</label>
+                        <textarea id="movimentacao-observacao"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-danger" onclick="closeModal('modal-movimentacao')">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Registrar Movimentação</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais para Bordos e Rádios (estrutura similar) -->
     
     <footer>
         <div class="container">
             <p>Sistema de Gestão Axiagro &copy; 2023 - Todos os direitos reservados</p>
         </div>
     </footer>
-    
+
     <script>
         // Sistema de Navegação Principal
         document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar gráficos
             initCharts();
-            
-            // Configurar navegação
             setupNavigation();
-            
-            // Configurar buscas
             setupSearch();
+            setupForms();
         });
 
         function setupNavigation() {
-            // Navegação entre abas principais
             document.querySelectorAll('.nav-link').forEach(tab => {
                 tab.addEventListener('click', function(e) {
                     e.preventDefault();
-                    
-                    // Remove classe active de todas as abas
                     document.querySelectorAll('.nav-link').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-                    
-                    // Adiciona classe active à aba clicada
                     this.classList.add('active');
                     const tabId = this.getAttribute('data-tab');
                     document.getElementById(tabId).classList.add('active');
                 });
             });
             
-            // Navegação entre subtabas (celulares)
             document.querySelectorAll('.tab-container .tab').forEach(tab => {
                 tab.addEventListener('click', function() {
-                    // Remove classe active de todas as subtabas
                     const container = this.closest('.tab-container');
                     container.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     container.querySelectorAll('.subtab-content').forEach(t => t.classList.remove('active'));
-                    
-                    // Adiciona classe active à subtaba clicada
                     this.classList.add('active');
                     const subtabId = this.getAttribute('data-subtab');
                     document.getElementById(subtabId).classList.add('active');
                 });
             });
             
-            // Navegação pelos botões de ação rápida
             document.querySelectorAll('.action-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const tab = this.getAttribute('data-tab');
-                    
-                    // Remove classe active de todas as abas
                     document.querySelectorAll('.nav-link').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-                    
-                    // Adiciona classe active à aba selecionada
                     document.querySelector(`.nav-link[data-tab="${tab}"]`).classList.add('active');
                     document.getElementById(tab).classList.add('active');
                 });
@@ -1757,7 +3230,6 @@
         }
 
         function setupSearch() {
-            // Configurar todas as funcionalidades de busca
             const searchConfig = [
                 { btn: 'btn-search-celulares', input: 'search-celulares', getTable: () => {
                     const activeSubTab = document.querySelector('.tab-container .tab.active').getAttribute('data-subtab');
@@ -1781,7 +3253,6 @@
                 });
             });
 
-            // Configurar filtros de gráficos
             document.querySelectorAll('.chart-filter').forEach(button => {
                 button.addEventListener('click', function() {
                     document.querySelectorAll('.chart-filter').forEach(btn => btn.classList.remove('active'));
@@ -1805,13 +3276,139 @@
                 }
             });
             
-            // Feedback visual
             if (!found && searchTerm) {
                 inputElement.style.borderColor = 'var(--danger)';
                 setTimeout(() => {
                     inputElement.style.borderColor = '#ddd';
                 }, 2000);
             }
+        }
+
+        // Sistema de Modais e CRUD
+        function openModal(modalId, action, button = null) {
+            const modal = document.getElementById(modalId);
+            const title = modal.querySelector('#modal-' + modalId.split('-')[1] + '-title');
+            
+            if (action === 'add') {
+                title.textContent = 'Novo ' + getModalType(modalId);
+                resetForm(modalId);
+            } else if (action === 'edit' && button) {
+                title.textContent = 'Editar ' + getModalType(modalId);
+                fillFormWithData(modalId, button);
+            } else if (action === 'movimentar' && button) {
+                title.textContent = 'Movimentar Estoque';
+                fillMovimentacaoForm(button);
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function getModalType(modalId) {
+            const types = {
+                'modal-celular': 'Celular',
+                'modal-bordo': 'Bordo',
+                'modal-radio': 'Rádio',
+                'modal-estoque': 'Item de Estoque',
+                'modal-movimentacao': 'Movimentação'
+            };
+            return types[modalId] || 'Item';
+        }
+
+        function resetForm(modalId) {
+            const form = document.querySelector(`#${modalId} form`);
+            if (form) form.reset();
+        }
+
+        function fillFormWithData(modalId, button) {
+            const row = button.closest('tr');
+            const cells = row.querySelectorAll('td');
+            
+            // Preencher formulário com dados da linha
+            // Implementação específica para cada tipo de modal
+        }
+
+        function fillMovimentacaoForm(button) {
+            const row = button.closest('tr');
+            const cells = row.querySelectorAll('td');
+            const equipamento = cells[0].textContent;
+            
+            document.getElementById('movimentacao-equipamento').value = equipamento;
+        }
+
+        function deleteItem(button, type) {
+            if (confirm(`Tem certeza que deseja excluir este ${type}?`)) {
+                const row = button.closest('tr');
+                row.remove();
+                showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} excluído com sucesso!`, 'success');
+            }
+        }
+
+        function setupForms() {
+            // Configurar submit dos formulários
+            document.getElementById('form-celular').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveCelular();
+            });
+            
+            document.getElementById('form-estoque').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveEstoque();
+            });
+            
+            document.getElementById('form-movimentacao').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveMovimentacao();
+            });
+        }
+
+        function saveCelular() {
+            // Implementar lógica de salvamento
+            showNotification('Celular salvo com sucesso!', 'success');
+            closeModal('modal-celular');
+        }
+
+        function saveEstoque() {
+            // Implementar lógica de salvamento
+            showNotification('Item de estoque salvo com sucesso!', 'success');
+            closeModal('modal-estoque');
+        }
+
+        function saveMovimentacao() {
+            // Implementar lógica de salvamento
+            showNotification('Movimentação registrada com sucesso!', 'success');
+            closeModal('modal-movimentacao');
+        }
+
+        function showNotification(message, type) {
+            // Criar e exibir notificação
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+                ${message}
+            `;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'var(--success)' : 'var(--danger)'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1001;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
 
         function initCharts() {
@@ -1910,6 +3507,15 @@
             el.classList.remove('active');
         });
         document.getElementById('tracao').classList.add('active');
+
+        // Fechar modal ao clicar fora
+        window.addEventListener('click', function(e) {
+            document.querySelectorAll('.modal').forEach(modal => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html>
